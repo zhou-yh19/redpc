@@ -1,0 +1,14 @@
+*.pyc
+dist/
+/*.egg-info
+build/
+.ipynb_checkpoints
+__pycache__/
+.history/
+*.png
+*.npy
+*.pth
+*.csv
+*.bak/
+*.bak
+*.DS_Store
