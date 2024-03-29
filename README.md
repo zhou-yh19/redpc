@@ -7,6 +7,9 @@ The code is tested with Python 3.10
 ## Installation
 ```
 pip install -r requirements.txt
+git clone git@github.com:zhou-yh19/PyDeePC.git
+cd PyDeePC
+pip install -e .
 ```
 
 ## Code structure
@@ -23,9 +26,4 @@ pip install -r requirements.txt
 
 The project is released under the MIT license. See [LICENSE](LICENSE) for details.
 
-
-
-
-
-
-
+Part of the project is modified from [PyDeePC](https://github.com/rssalessio/PyDeePC)
