@@ -14,22 +14,22 @@ from src.utils.dataloader import create_dataloader
 parser = argparse.ArgumentParser()
 parser.add_argument('--lr', type=float, default=1e-1, help='learning rate')
 parser.add_argument('--epochs', type=int, default=100, help='number of epochs')
-parser.add_argument('--batch_size', type=int, default=10000, help='batch size')
+parser.add_argument('--batch-size', type=int, default=10000, help='batch size')
 parser.add_argument('--m', type=int, default=48, help='number of constraints')
 parser.add_argument('--n', type=int, default=2, help='number of variables')
 parser.add_argument('--approximator', type=str, default='QP', help='approximator name')
 parser.add_argument('--device', type=str, default='cuda', help='device')
 parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument("--iters", type=int, default=20, help="number of iterations of solver")
-parser.add_argument("--mlp_size_last", type=int, default=64)
-parser.add_argument("--n_in", type=int, default=2)
-parser.add_argument("--n_out", type=int, default=2)
-parser.add_argument("--trajectory_length", type=int, default=50)
-parser.add_argument("--huber_delta", type=float, default=1e4)
-parser.add_argument("--batch_num", type=int, default=10)
+parser.add_argument("--mlp-size-last", type=int, default=64)
+parser.add_argument("--n-in", type=int, default=2)
+parser.add_argument("--n-out", type=int, default=2)
+parser.add_argument("--trajectory-length", type=int, default=50)
+parser.add_argument("--batch-num", type=int, default=10)
 parser.add_argument("--overlap", action="store_true", help="Enable overlap feature (default: %(default)s)")
 parser.add_argument("--system", type=str, default='tank', help="system name")
-parser.add_argument("--exp_name", type=str, default=None, help="experiment name")
+parser.add_argument("--process-std", type=float, default=0.01)
+parser.add_argument("--measurement-std", type=float, default=0.1)
 parser.add_argument("--norm", type=int, default=2, help="norm of the score")
 
 args = parser.parse_args()
@@ -48,23 +48,24 @@ iters = args.iters
 n_in = args.n_in
 n_out = args.n_out
 trajectory_length = args.trajectory_length
-exp_name = args.exp_name
-huber_delta = args.huber_delta
+process_std = args.process_std
+measurement_std = args.measurement_std
+exp_name = f"process_std_{process_std}_measurement_std_{measurement_std}"
 overlap = args.overlap
 norm = args.norm
 np.random.seed(random_seed)
 torch.manual_seed(random_seed)
 
 path = os.path.join(file_path, f"../experiments/{args.system}")
-exp_path = os.path.join(path, f'runs/{args.exp_name}')
+exp_path = os.path.join(path, f'runs/{exp_name}')
 if not os.path.exists(exp_path):
     os.makedirs(exp_path)
-case_name = f"{approximator_name}_iters_{iters}_nqp_{args.n}_mqp_{args.m}_huber_delta_{huber_delta}_lr_{LR}_seed_{random_seed}_overlap_{overlap}_norm_{norm}"
+case_name = f"{approximator_name}_iters_{iters}_nqp_{args.n}_mqp_{args.m}_lr_{LR}_seed_{random_seed}_overlap_{overlap}_norm_{norm}"
 case_path = os.path.join(exp_path, case_name)
 print(f"case_path: {case_path}")
 if not os.path.exists(case_path):
     os.makedirs(case_path)
-data_path = os.path.join(path, f"data/{args.exp_name}")
+data_path = os.path.join(path, f"data/{exp_name}")
 
 ## load data
 dataloaders = create_dataloader(data_path, norm=norm, batch_size=BATCH_SIZE, device=device, overlap=overlap)
@@ -77,7 +78,6 @@ print(model)
 optimizer = optim.Adam(model.parameters(), lr=LR)
 
 # # loss function
-# criterion = nn.HuberLoss(reduction="mean", delta=huber_delta)
 criterion = nn.MSELoss(reduction="mean")
 # criterion = nn.L1Loss(reduction="mean")
 

@@ -14,13 +14,13 @@ def create_dataloader(
     device='cuda'
     ):
 
-    if norm == 1:
+    if norm == 1:  # learning the l1 score
         score_name = "l1"
-    elif norm == 2:
+    elif norm == 2:  # learning the l2 square score
         score_name = "l2square"
-    elif norm == 12:
+    elif norm == 12: # learning the hybrid norm score consisting of l1 and l2
         score_name = "l12"
-    elif norm == 0:
+    elif norm == 0:  # learning the proximal of the hybrid norm score consisting of l1 and l2, here we abuse "norm==0"
         score_name = "l12_prox_tau"
     ## load data
     if overlap:

@@ -15,10 +15,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--T-INI', type=int, default=10, help='initial time steps')
 parser.add_argument('--HORIZON', type=int, default=40, help='prediction horizon')
 parser.add_argument('--LENGTH', type=int, default=400, help='number of data points used to estimate the system')
-parser.add_argument('--LAMBDA-G', type=float, default=1, help='regularization parameter for the control input')
-parser.add_argument('--LAMBDA-Y', type=float, default=5e5, help='regularization parameter for the output')
-parser.add_argument('--LAMBDA-G-', type=float, default=0, help='regularization parameter for the control input')
-parser.add_argument('--LAMBDA-Y-', type=float, default=0, help='regularization parameter for the output')
+parser.add_argument('--LAMBDA-G1', type=float, default=1, help='regularization parameter for g')
+parser.add_argument('--LAMBDA-Y1', type=float, default=5e5, help='regularization parameter for sigma_y')
+parser.add_argument('--LAMBDA-G2', type=float, default=0, help='regularization parameter for g')
+parser.add_argument('--LAMBDA-Y2', type=float, default=0, help='regularization parameter for sigma_y')
 parser.add_argument('--n-in', type=int, default=2, help='number of input channels')
 parser.add_argument('--n-out', type=int, default=2, help='number of output channels')
 parser.add_argument('--overlap', action="store_true", help="Enable overlap feature")
@@ -33,10 +33,10 @@ args = parser.parse_args()
 T_INI = args.T_INI
 HORIZON = args.HORIZON
 LENGTH = args.LENGTH
-LAMBDA_G = args.LAMBDA_G
-LAMBDA_Y = args.LAMBDA_Y
-LAMBDA_G_ = args.LAMBDA_G_
-LAMBDA_Y_ = args.LAMBDA_Y_
+LAMBDA_G1 = args.LAMBDA_G1
+LAMBDA_Y1 = args.LAMBDA_Y1
+LAMBDA_G2 = args.LAMBDA_G2
+LAMBDA_Y2 = args.LAMBDA_Y2
 n_in = args.n_in
 n_out = args.n_out
 OVERLAP = args.overlap
@@ -72,7 +72,7 @@ def compute_trajectory_score(i):
     sigma_y = cp.Variable(shape=(n_sigma_y), name='sigma_y')
     tau = cp.Variable(shape=((T_INI + HORIZON) * (n_in + n_out)), name='tau')
     constraints = [Up @ g == tau[:T_INI * n_in], Yp @ g == tau[(T_INI + HORIZON) * n_in: (T_INI + HORIZON) * n_in + T_INI * n_out] + sigma_y, Uf @ g == tau[T_INI * n_in: (T_INI + HORIZON) * n_in], Yf @ g == tau[(T_INI + HORIZON) * n_in + T_INI * n_out:]]
-    objective = cp.Minimize(LAMBDA_G * cp.norm(g, p=1) + LAMBDA_Y * cp.norm(sigma_y, p=1) + LAMBDA_G_ * cp.norm(g, p=2) ** 2 + LAMBDA_Y_ * cp.norm(sigma_y, p=2) ** 2 + 0.5 * cp.norm(tau - dataset_traj[i], p=2) ** 2)
+    objective = cp.Minimize(LAMBDA_G1 * cp.norm(g, p=1) + LAMBDA_Y1 * cp.norm(sigma_y, p=1) + LAMBDA_G2 * cp.norm(g, p=2) ** 2 + LAMBDA_Y2 * cp.norm(sigma_y, p=2) ** 2 + 0.5 * cp.norm(tau - dataset_traj[i], p=2) ** 2)
     problem = cp.Problem(objective, constraints)
     result = problem.solve(solver="MOSEK", mosek_params={'MSK_IPAR_NUM_THREADS': 1})
     tau = tau.value

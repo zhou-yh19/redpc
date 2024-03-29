@@ -4,10 +4,10 @@ tikzplotlib==0.10.1
 cvxpy==1.4.2
 ecos==2.0.13
 Mosek==10.1.28
-osqp==1.0.0b1
+osqp==0.6.5
 scs==3.2.4.post1
 PyDeePC==0.3.5
 scikit-learn==1.4.1.post1
-scipy==1.12.0
+scipy==1.11.4
 torch==2.2.1
 GPUtil==1.4.0

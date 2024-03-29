@@ -14,14 +14,14 @@ from cvxpy.constraints.constraint import Constraint
 from typing import List
 from pydeepc import DeePC
 from src.modules.pydeepc_l2_square import DeePC_QP
-from modules.pydeepc_l12 import DeePC_l12
+from src.modules.pydeepc_l12 import DeePC_l12
 from experiments.utils import System, Data, split_data
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=2024)
 parser.add_argument('--horizon', type=int, default=40)
 parser.add_argument('--lambda-g1', type=float, default=0)
-parser.add_argument('--lambda-y2', type=float, default=0)
+parser.add_argument('--lambda-y1', type=float, default=0)
 parser.add_argument('--lambda-g2', type=float, default=0)
 parser.add_argument('--lambda-y2', type=float, default=0)
 parser.add_argument('--q-weight', type=float, default=35)
